@@ -15,9 +15,9 @@ apiServer:
 
 # Configuration for the Insights server.
 insightsServer:
-  port: 8081
+  port: 8181
   publicHost: localhost
-  publicPort: 8081
+  publicPort: 8181
   publicScheme: http
 
 # Configuration for the web server.
