@@ -3,6 +3,7 @@
 #
 ### Our AI generated Recipe
 class: Recipe
+table: recipe
 fields:
   ### The author of the recipe
   author: String
@@ -12,3 +13,4 @@ fields:
   date: DateTime
   ### The ingredients the user has passed in
   ingredients: String
+  deletedAt: DateTime?, scope= serverOnly

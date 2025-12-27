@@ -271,6 +271,62 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'recipes',
       endpoint: endpoints['recipes']!,
       methodConnectors: {
+        'getAllRecipes': _i1.MethodConnector(
+          name: 'getAllRecipes',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['recipes'] as _i5.RecipesEndpoint)
+                  .getAllRecipes(session),
+        ),
+        'getAllDeleted': _i1.MethodConnector(
+          name: 'getAllDeleted',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['recipes'] as _i5.RecipesEndpoint)
+                  .getAllDeleted(session),
+        ),
+        'getById': _i1.MethodConnector(
+          name: 'getById',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['recipes'] as _i5.RecipesEndpoint).getById(
+                session,
+                params['id'],
+              ),
+        ),
+        'delete': _i1.MethodConnector(
+          name: 'delete',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['recipes'] as _i5.RecipesEndpoint).delete(
+                session,
+                params['id'],
+              ),
+        ),
         'generateRecipe': _i1.MethodConnector(
           name: 'generateRecipe',
           params: {

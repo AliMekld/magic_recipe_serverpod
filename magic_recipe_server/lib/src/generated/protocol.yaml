@@ -11,4 +11,8 @@ jwtRefresh:
 greeting:
   - hello:
 recipes:
+  - getAllRecipes:
+  - getAllDeleted:
+  - getById:
+  - delete:
   - generateRecipe:

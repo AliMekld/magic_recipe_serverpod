@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magic_recipe_client/magic_recipe_client.dart';
 
 import '../main.dart';
 
@@ -12,6 +13,7 @@ class RecipeScreen extends StatefulWidget {
 }
 
 class _RecipeScreenState extends State<RecipeScreen> {
+  
   /// Holds the last result or null if no result exists yet.
   String? _resultMessage;
 
@@ -37,7 +39,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
       setState(() {
         _errorMessage = null;
         _loading=false;
-        _resultMessage = result;
+        _resultMessage = result.text;
       });
     } catch (e) {
       setState(() {
@@ -46,33 +48,93 @@ class _RecipeScreenState extends State<RecipeScreen> {
       });
     }
   }
-
+@override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+    final screen=MediaQuery.sizeOf(context).height;
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-
-          TextField(
-            controller: _textEditingController,
-            decoration: const InputDecoration(hintText: 'Enter your name'),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _loading?null: _callGenerateRecipe,
-            child:  Text(_loading? "Loading...": 'Send to Server'),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              child: ResultDisplay(
-                resultMessage: _resultMessage,
-                errorMessage: _errorMessage,
+      child: SizedBox(
+        height: screen,
+        child: Row(
+          spacing: 16,
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _textEditingController,
+                    decoration: const InputDecoration(hintText: 'Enter your name'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loading?null: _callGenerateRecipe,
+                    child:  Text(_loading? "Loading...": 'Send to Server'),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: ResultDisplay(
+                        resultMessage: _resultMessage,
+                        errorMessage: _errorMessage,
+                      ),
+                    ),
+                  ),
+                    ],
               ),
             ),
-          ),
-        ],
+                  Container(
+                    color: Colors.grey[50],
+                    width: 200,
+                    height:screen ,
+                    child: FutureBuilder<List<Recipe>>(
+                      future: client.recipes.getAllRecipes(),
+                      builder: (context,sh) {
+                        bool isError=sh.hasError;
+                        if(sh.connectionState==ConnectionState.waiting){
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+                        final recipesList=sh.data??[];
+                        return isError?Text("error ${sh.error.toString()}"): ListView.separated(
+                          padding: EdgeInsets.all(8),
+                          separatorBuilder: (context, index) => Divider(),
+                          itemCount: recipesList.length,
+                          itemBuilder: (context, index) {
+                          final recipe=recipesList[index];
+                          return Container(
+                            // height: 200,
+                            width: 200,
+                            padding: EdgeInsets.all(16),
+                        
+                            child: Wrap(
+                              runSpacing: 16,
+                            spacing: 16,
+                            children: [
+                              Text(recipe.id?.toString()??"",),
+                              Text(recipe.author),
+                              Text(recipe.date.toString()),
+                              Text(recipe.text,maxLines: 3,),
+                              IconButton(icon: Icon(Icons.delete),onPressed: ()async{
+                                if(recipe.id==null)return;
+                                await client.recipes.delete(recipe.id!);
+                                await client.recipes.getAllRecipes();
+                                setState(() {
+                                  
+                                });
+                              
+                              },)
+                            ],
+                          ),);
+                        } );
+                      }
+                    ),
+                  )
+            
+          ],
+        ),
       ),
     );
   }
